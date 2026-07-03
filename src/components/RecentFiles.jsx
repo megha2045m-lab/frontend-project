@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API = "http://localhost:5000/api/files";
+const API = "https://backend-project-r1kg.onrender.com/api/files";
 
 function RecentFiles() {
   const [files, setFiles] = useState([]);

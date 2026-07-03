@@ -30,7 +30,7 @@ function FileUpload() {
       setProgress(0);
 
       await axios.post(
-        "http://localhost:5000/api/files/upload",
+        "https://backend-project-r1kg.onrender.com/api/files/upload",
         formData,
         {
           onUploadProgress: (event) => {

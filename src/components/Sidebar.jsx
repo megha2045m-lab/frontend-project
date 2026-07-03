@@ -15,7 +15,7 @@ function Sidebar() {
 
   const fetchStorage = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/files");
+      const res = await axios.get("https://backend-project-r1kg.onrender.com/api/files");
 
       const activeFiles = res.data.filter((file) => !file.isDeleted);
 

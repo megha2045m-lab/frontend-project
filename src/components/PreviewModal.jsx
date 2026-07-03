@@ -1,7 +1,7 @@
 function PreviewModal({ file, onClose }) {
   if (!file) return null;
 
-  const previewUrl = `http://localhost:5000/api/files/preview/${file._id}`;
+  const previewUrl = `https://backend-project-r1kg.onrender.com/api/files/preview/${file._id}`;
 
   const isImage = file.fileType.startsWith("image/");
   const isPDF = file.fileType === "application/pdf";
@@ -44,7 +44,7 @@ function PreviewModal({ file, onClose }) {
               </p>
 
               <a
-                href={`http://localhost:5000/api/files/download/${file._id}`}
+                href={`https://backend-project-r1kg.onrender.com/api/files/download/${file._id}`}
                 className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
               >
                 Download File

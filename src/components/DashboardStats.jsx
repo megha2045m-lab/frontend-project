@@ -10,7 +10,7 @@ function DashboardStats() {
 
   const fetchFiles = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/files");
+      const res = await axios.get("https://backend-project-r1kg.onrender.com/api/files");
       setFiles(res.data);
     } catch (error) {
       console.error(error);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PreviewModal from "./PreviewModal";
 
-const API = "http://localhost:5000/api/files";
+const API = "https://backend-project-r1kg.onrender.com/api/files";
 
 function FileList({ filter, search = "" }) {
   const [files, setFiles] = useState([]);
