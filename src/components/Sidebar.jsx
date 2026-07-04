@@ -116,18 +116,28 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 min-h-screen bg-white shadow-lg flex flex-col">
+    <aside className="w-64 min-h-[calc(100vh-73px)] bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col">
 
       {/* Upload Button */}
 
-      <div className="p-6 border-b">
+      <div className="p-5">
 
         <button
           onClick={handleUploadClick}
           disabled={uploading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition disabled:bg-gray-400"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white py-3.5 px-4 rounded-2xl font-bold shadow-lg shadow-blue-500/10 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          {uploading ? `Uploading ${progress}%` : "+ New Upload"}
+          {uploading ? (
+            <>
+              <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+              <span>Uploading {progress}%</span>
+            </>
+          ) : (
+            <>
+              <span className="text-lg">+</span>
+              <span>New Upload</span>
+            </>
+          )}
         </button>
         <input
           type="file"
@@ -140,58 +150,45 @@ function Sidebar() {
 
       {/* Navigation */}
 
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 px-3 py-2 space-y-1">
 
-        <ul className="space-y-2">
-
-          {menuItems.map((item) => (
-
-            <li key={item.path}>
-
-              <Link
-                to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium
-
-                ${
-                  location.pathname === item.path
-                    ? "bg-blue-100 text-blue-700"
-                    : "hover:bg-gray-100 text-gray-700"
-                }`}
-              >
-                <span>{item.icon}</span>
-
-                <span>{item.name}</span>
-
-              </Link>
-
-            </li>
-
-          ))}
-
-        </ul>
+        {menuItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all duration-200 font-semibold text-sm
+            ${
+              location.pathname === item.path
+                ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                : "hover:bg-slate-800/60 hover:text-slate-100 text-slate-400"
+            }`}
+          >
+            <span className="text-base">{item.icon}</span>
+            <span>{item.name}</span>
+          </Link>
+        ))}
 
       </nav>
 
-      {/* Storage */}
+      {/* Storage Indicator */}
 
-      <div className="p-6 border-t">
+      <div className="p-5 border-t border-slate-800 bg-slate-950/40">
 
-        <h3 className="font-semibold mb-3">
-          Storage
-        </h3>
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Storage Used</span>
+          <span className="text-xs font-bold text-blue-400">{percentage.toFixed(1)}%</span>
+        </div>
 
-        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-
+        <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
           <div
-            className="h-full bg-blue-600 transition-all duration-500"
+            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500 rounded-full"
             style={{
               width: `${percentage}%`,
             }}
           ></div>
-
         </div>
 
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="text-xs text-slate-500 font-medium">
           {storageUsed.toFixed(2)} MB of {MAX_STORAGE} MB used
         </p>
 
