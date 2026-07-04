@@ -2,76 +2,90 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL as API } from "../config";
 
+const getFileIcon = (fileType) => {
+  if (!fileType) return "📁";
+  if (fileType.startsWith("image/")) return "🖼️";
+  if (fileType.startsWith("video/")) return "🎥";
+  if (fileType.startsWith("audio/")) return "🎵";
+  if (fileType === "application/pdf") return "📕";
+  if (fileType.includes("word"))      return "📘";
+  if (fileType.includes("sheet"))     return "📗";
+  return "📄";
+};
+
+const fmtSize = (bytes) => {
+  if (bytes < 1024)        return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+};
+
 function RecentFiles() {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    fetchRecentFiles();
+    axios.get(API)
+      .then(res => {
+        const recent = res.data
+          .filter(f => !f.isDeleted)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 6);
+        setFiles(recent);
+      })
+      .catch(console.error);
   }, []);
 
-  const fetchRecentFiles = async () => {
-    try {
-      const res = await axios.get(API);
-
-      const recent = res.data
-        .filter(file => !file.isDeleted)
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt) -
-            new Date(a.createdAt)
-        )
-        .slice(0, 5);
-
-      setFiles(recent);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm mt-8">
-
-      <h2 className="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
-        <span>🕒</span>
-        <span>Recent Uploads</span>
+    <div style={{
+      background: "rgba(15,23,42,0.6)",
+      backdropFilter: "blur(16px)",
+      border: "1px solid rgba(99,102,241,0.12)",
+      borderRadius: 18,
+      padding: "1.5rem",
+      marginTop: "1.5rem",
+    }}>
+      <h2 style={{ margin: "0 0 1.25rem 0", fontSize: "1rem", fontWeight: 700, color: "#e2e8f0", display: "flex", alignItems: "center", gap: 8 }}>
+        <span>🕒</span> Recent Uploads
       </h2>
 
       {files.length === 0 ? (
-        <p className="text-sm text-slate-400 font-medium">
-          No recent uploads.
+        <p style={{ color: "#475569", fontSize: "0.875rem", textAlign: "center", padding: "1.5rem 0" }}>
+          No recent files. Upload something!
         </p>
       ) : (
-        <div className="divide-y divide-slate-100">
-          {files.map((file) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {files.map((file, i) => (
             <div
               key={file._id}
-              className="flex justify-between items-center py-3.5 first:pt-0 last:pb-0 hover:bg-slate-50/50 transition-all rounded-lg px-2 -mx-2"
+              className="animate-fadeIn"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "0.75rem 0.875rem", borderRadius: 12, transition: "background 0.15s",
+                animationDelay: `${i * 60}ms`,
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.06)"}
+              onMouseLeave={e => e.currentTarget.style.background = "transparent"}
             >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <span className="text-xl">📄</span>
-                <div className="overflow-hidden">
-                  <p className="font-semibold text-slate-700 text-sm truncate">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, overflow: "hidden", flex: 1 }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>{getFileIcon(file.fileType)}</span>
+                <div style={{ overflow: "hidden" }}>
+                  <p style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600, color: "#cbd5e1", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {file.originalName}
                   </p>
-                  <p className="text-xs text-slate-400">
-                    {new Date(file.createdAt).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                  <p style={{ margin: 0, fontSize: "0.72rem", color: "#475569" }}>
+                    {new Date(file.createdAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
               </div>
-
-              <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md flex-shrink-0">
-                {(file.fileSize / 1024).toFixed(1)} KB
+              <span style={{
+                background: "rgba(99,102,241,0.12)", color: "#818cf8",
+                borderRadius: 8, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700, flexShrink: 0,
+              }}>
+                {fmtSize(file.fileSize)}
               </span>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 }
