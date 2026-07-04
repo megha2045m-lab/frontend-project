@@ -1,6 +1,9 @@
 import Layout from "../components/Layout";
 
 function Settings() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userDisplay = user?.email || "Megha";
+
   return (
     <Layout>
       <div className="max-w-4xl">
@@ -18,7 +21,7 @@ function Settings() {
           <div className="space-y-3">
 
             <p>
-              <strong>User:</strong> Megha
+              <strong>User:</strong> {userDisplay}
             </p>
 
             <p>
@@ -54,7 +57,8 @@ function Settings() {
           <button
             className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg"
             onClick={() => {
-              alert("Logout functionality will be added later.");
+              localStorage.removeItem("user");
+              window.location.href = "/login";
             }}
           >
             Logout

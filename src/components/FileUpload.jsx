@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_URL } from "../config";
 
 function FileUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -30,7 +31,7 @@ function FileUpload() {
       setProgress(0);
 
       await axios.post(
-        "https://backend-project-r1kg.onrender.com/api/files/upload",
+        `${API_URL}/upload`,
         formData,
         {
           onUploadProgress: (event) => {

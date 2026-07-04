@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 
 function DashboardStats() {
   const [files, setFiles] = useState([]);
@@ -10,7 +11,7 @@ function DashboardStats() {
 
   const fetchFiles = async () => {
     try {
-      const res = await axios.get("https://backend-project-r1kg.onrender.com/api/files");
+      const res = await axios.get(API_URL);
       setFiles(res.data);
     } catch (error) {
       console.error(error);

@@ -1,11 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { API_URL } from "../config";
 
 function Sidebar() {
   const location = useLocation();
 
   const [storageUsed, setStorageUsed] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const fileInputRef = useRef(null);
 
   const MAX_STORAGE = 100; // MB
 
@@ -15,7 +20,7 @@ function Sidebar() {
 
   const fetchStorage = async () => {
     try {
-      const res = await axios.get("https://backend-project-r1kg.onrender.com/api/files");
+      const res = await axios.get(API_URL);
 
       const activeFiles = res.data.filter((file) => !file.isDeleted);
 
@@ -29,6 +34,51 @@ function Sidebar() {
       setStorageUsed(totalMB);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      setUploading(true);
+      setProgress(0);
+      toast.info(`Uploading ${file.name}...`);
+
+      await axios.post(
+        `${API_URL}/upload`,
+        formData,
+        {
+          onUploadProgress: (event) => {
+            const percent = Math.round(
+              (event.loaded * 100) / event.total
+            );
+            setProgress(percent);
+          },
+        }
+      );
+
+      toast.success("File uploaded successfully!");
+      fetchStorage();
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
+      toast.error("Upload failed!");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -73,10 +123,18 @@ function Sidebar() {
       <div className="p-6 border-b">
 
         <button
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition"
+          onClick={handleUploadClick}
+          disabled={uploading}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition disabled:bg-gray-400"
         >
-          + New Upload
+          {uploading ? `Uploading ${progress}%` : "+ New Upload"}
         </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+        />
 
       </div>
 
